@@ -1,97 +1,105 @@
-// Elements
-const loginBtn = document.querySelector('a[href="#"]'); // Navbar login link
-const loginModal = document.getElementById('loginModal');
-const closeBtn = document.getElementById('closeLogin');
-const loginForm = document.getElementById('loginForm');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-
-// Fake user for demo
-const fakeEmail = "test@example.com";
-const fakePassword = "password123";
-
-// --- Open Modal ---
-loginBtn.addEventListener('click', (e) => {
-  e.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+    const loginModal = document.getElementById('loginModal');
+    const closeLoginBtn = document.getElementById('closeLogin');
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginMessage = document.getElementById('loginMessage');
+    const togglePasswordLogin = document.getElementById('togglePassword');
+    const loginBtn = document.getElementById('loginBtn');
   
-  // If currently showing "Logout", treat it as logout request
-  if (loginBtn.textContent.trim() === "Logout") {
-    const confirmLogout = confirm("Sure you want to logout!!");
-    if (confirmLogout) {
-      loginBtn.textContent = "Login";
-      alert("You have been logged out.");
+    const fakeEmail = "test@example.com";
+    const fakePassword = "password123";
+    let loggedIn = false;
+  
+    function openLoginModal() {
+      loginModal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+  
+      loginMessage.textContent = '';
+      emailInput.value = '';
+      passwordInput.value = '';
+      emailInput.classList.remove('error');
+      passwordInput.classList.remove('error');
     }
-    return;
-  }
-
-  // Otherwise open the login modal
-  loginModal.classList.add("show");
   
-  // Clear fields every time it opens
-  emailInput.value = "";
-  passwordInput.value = "";
-
-  // Remove error/success styling if any
-  emailInput.classList.remove("error");
-  passwordInput.classList.remove("error");
-  document.querySelectorAll(".error-message").forEach(msg => msg.remove());
-});
-
-// --- Close Modal ---
-closeBtn.addEventListener('click', () => {
-  loginModal.classList.remove("show");
-});
-
-// --- Handle Login ---
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  // Remove previous error messages
-  document.querySelectorAll(".error-message").forEach(msg => msg.remove());
-  emailInput.classList.remove("error");
-  passwordInput.classList.remove("error");
-
-  // Basic validation
-  if (!email || !password) {
-    showError("Please fill in all fields.");
-    return;
-  }
-
-  if (email === fakeEmail && password === fakePassword) {
-    alert("Login successful!");
-    loginModal.classList.remove("show");
-    loginBtn.textContent = "Logout";
-
-    // Clear fields after success
-    emailInput.value = "";
-    passwordInput.value = "";
-  } else {
-    showError("Invalid email or password.");
-  }
-});
-
-// --- Helper Function ---
-function showError(message) {
-  const errorMsg = document.createElement("p");
-  errorMsg.textContent = message;
-  errorMsg.className = "error-message";
-  errorMsg.style.color = "red";
-  errorMsg.style.marginTop = "10px";
-  loginForm.appendChild(errorMsg);
-  emailInput.classList.add("error");
-  passwordInput.classList.add("error");
-}
-
-// Show/Hide password toggle
-const pwdInput = document.getElementById("password");
-const togglePassword = document.getElementById("togglePassword");
-
-togglePassword.addEventListener("click", () => {
-  const type = pwdInput.getAttribute("type") === "password" ? "text" : "password";
-  pwdInput.setAttribute("type", type);
-  togglePassword.textContent = type === "password" ? "Show" : "Hide";
-});
-
+    if (loginBtn) {
+      loginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+  
+        if (loggedIn) {
+          if (confirm('Are you sure you want to logout?')) {
+            loggedIn = false;
+            loginBtn.textContent = 'Login';
+            alert('You have been logged out.');
+          }
+        } else {
+          openLoginModal();
+        }
+      });
+    }
+  
+    closeLoginBtn.addEventListener('click', () => {
+      loginModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+  
+    window.addEventListener('click', (e) => {
+      if (e.target === loginModal) {
+        loginModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
+  
+    togglePasswordLogin.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      togglePasswordLogin.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+  
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+  
+      loginMessage.textContent = '';
+      emailInput.classList.remove('error');
+      passwordInput.classList.remove('error');
+  
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+  
+      if (!email || !password) {
+        loginMessage.style.color = 'red';
+        loginMessage.textContent = 'Please fill in all fields.';
+        if (!email) emailInput.classList.add('error');
+        if (!password) passwordInput.classList.add('error');
+        return;
+      }
+  
+      if (email === fakeEmail && password === fakePassword) {
+        loginMessage.style.color = 'green';
+        loginMessage.textContent = 'Login successful!';
+        setTimeout(() => {
+          loginModal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+          loggedIn = true;
+          loginBtn.textContent = 'Logout';
+          loginForm.reset();
+        }, 1000);
+      } else {
+        loginMessage.style.color = 'red';
+        loginMessage.textContent = 'Invalid email or password.';
+        emailInput.classList.add('error');
+        passwordInput.classList.add('error');
+      }
+    });
+  
+    // Allow external script to set login state
+    window.loginUtils = {
+      openLoginModal,
+      setLoggedIn: function (state) {
+        loggedIn = state;
+        loginBtn.textContent = state ? 'Logout' : 'Login';
+      }
+    };
+  });
+  

@@ -1,6 +1,6 @@
 /* Modal Background */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -10,6 +10,7 @@
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
   }
+  
   .modal.show {
     display: block;
   }
@@ -17,15 +18,22 @@
   /* Modal Content Box */
   .modal-content {
     background-color: #fff;
-    margin: 10% auto;
     padding: 30px;
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Prevent page scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
   }
   
   /* Close Button (×) */
@@ -55,7 +63,7 @@
   /* Input Fields */
   #loginForm input[type="email"],
   #loginForm input[type="password"] {
-    height:42px;
+    height: 42px;
     width: 100%;
     padding: 12px;
     margin: 8px 0;
@@ -113,7 +121,8 @@
   .register-link a:hover {
     text-decoration: underline;
   }
-
+  
+  /* Password Wrapper */
   .password-wrapper {
     position: relative;
     display: flex;
@@ -140,9 +149,5 @@
     user-select: none;
     min-width: 40px;
     text-align: right;
-
   }
-  
-  
-  
   
